@@ -3,60 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Galería de Imágenes con Zoom</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="carousel">
+        <!-- Primer set de imágenes -->
+        <div class="card"><img src="img/i1.jpeg" alt="Imagen 1"></div>
+        <div class="card"><img src="img/i2.jpeg" alt="Imagen 2"></div>
+        <div class="card"><img src="img/i3.jpeg" alt="Imagen 3"></div>
+        <div class="card"><img src="img/i4.jpeg" alt="Imagen 4"></div>
+        <div class="card"><img src="img/i5.jpeg" alt="Imagen 5"></div>
+        <div class="card"><img src="img/i6.jpeg" alt="Imagen 6"></div>
+        <div class="card"><img src="img/i7.jpeg" alt="Imagen 7"></div>
+        <div class="card"><img src="img/i8.jpeg" alt="Imagen 8"></div>
+        <div class="card"><img src="img/i9.jpeg" alt="Imagen 9"></div>
+        <div class="card"><img src="img/i10.jpeg" alt="Imagen 10"></div>
+        <div class="card"><img src="img/i11.jpeg" alt="Imagen 11"></div>
+        <div class="card"><img src="img/i12.jpeg" alt="Imagen 12"></div>
+        <div class="card"><img src="img/i13.jpeg" alt="Imagen 13"></div>
+        <div class="card"><img src="img/i14.jpeg" alt="Imagen 14"></div>
         
-            <div class="card"><img src="img/i1.jpeg" alt="Imagen 1"></div>
-            <div class="card"><img src="img/i2.jpeg" alt="Imagen 2"></div>
-            <div class="card"><img src="img/i3.jpeg" alt="Imagen 3"></div>
-            <div class="card"><img src="img/i4.jpeg" alt="Imagen 4"></div>
-            <div class="card"><img src="img/i5.jpeg" alt="Imagen 5"></div>
-            <div class="card"><img src="img/i6.jpeg" alt="Imagen 6"></div>
-            <div class="card"><img src="img/i7.jpeg" alt="Imagen 7"></div>
-            <div class="card"><img src="img/i8.jpeg" alt="Imagen 8"></div>
-            <div class="card"><img src="img/i9.jpeg" alt="Imagen 9"></div>
-            <div class="card"><img src="img/i10.jpeg" alt="Imagen 10"></div>
-            <div class="card"><img src="img/i11.jpeg" alt="Imagen 11"></div>
-            <div class="card"><img src="img/i12.jpeg" alt="Imagen 12"></div>
-            <div class="card"><img src="img/i13.jpeg" alt="Imagen 13"></div>
-            <div class="card"><img src="img/i14.jpeg" alt="Imagen 14"></div>
-        
-        
-            <div class="card"><img src="img/i1.jpeg" alt="Imagen 1"></div>
-            <div class="card"><img src="img/i2.jpeg" alt="Imagen 2"></div>
-            <div class="card"><img src="img/i3.jpeg" alt="Imagen 3"></div>
-            <div class="card"><img src="img/i4.jpeg" alt="Imagen 4"></div>
-            <div class="card"><img src="img/i5.jpeg" alt="Imagen 5"></div>
-            <div class="card"><img src="img/i6.jpeg" alt="Imagen 6"></div>
-            <div class="card"><img src="img/i7.jpeg" alt="Imagen 7"></div>
-            <div class="card"><img src="img/i8.jpeg" alt="Imagen 8"></div>
-            <div class="card"><img src="img/i9.jpeg" alt="Imagen 9"></div>
-            <div class="card"><img src="img/i10.jpeg" alt="Imagen 10"></div>
-            <div class="card"><img src="img/i11.jpeg" alt="Imagen 11"></div>
-            <div class="card"><img src="img/i12.jpeg" alt="Imagen 12"></div>
-            <div class="card"><img src="img/i13.jpeg" alt="Imagen 13"></div>
-            <div class="card"><img src="img/i14.jpeg" alt="Imagen 14"></div>
-        
-    </div> 
-
-  <div id="imageModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn">&times;</span>
-    <img id="modalImage" class="modal-image" src="" alt="">
-    <div class="modal-text-container">
-      <div class="note-indicator">
-      </div>
-      <textarea id="imageNote" class="modal-text" placeholder="Escribe una descripción permanente para esta imagen..."></textarea>
-      <button id="saveNote" class="save-btn">Guardar Descripción</button>
+        <!-- Segundo set (para efecto infinito) -->
+        <div class="card"><img src="img/i1.jpeg" alt="Imagen 1"></div>
+        <div class="card"><img src="img/i2.jpeg" alt="Imagen 2"></div>
+        <div class="card"><img src="img/i3.jpeg" alt="Imagen 3"></div>
+        <div class="card"><img src="img/i4.jpeg" alt="Imagen 4"></div>
+        <div class="card"><img src="img/i5.jpeg" alt="Imagen 5"></div>
+        <div class="card"><img src="img/i6.jpeg" alt="Imagen 6"></div>
+        <div class="card"><img src="img/i7.jpeg" alt="Imagen 7"></div>
+        <div class="card"><img src="img/i8.jpeg" alt="Imagen 8"></div>
+        <div class="card"><img src="img/i9.jpeg" alt="Imagen 9"></div>
+        <div class="card"><img src="img/i10.jpeg" alt="Imagen 10"></div>
+        <div class="card"><img src="img/i11.jpeg" alt="Imagen 11"></div>
+        <div class="card"><img src="img/i12.jpeg" alt="Imagen 12"></div>
+        <div class="card"><img src="img/i13.jpeg" alt="Imagen 13"></div>
+        <div class="card"><img src="img/i14.jpeg" alt="Imagen 14"></div>
     </div>
-  </div>
-</div>
 
-<script src="app.js"></script>
+    <!-- MODAL -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <img id="modalImage" class="modal-image" src="" alt="">
+            <div class="modal-text-container">
+                <div class="note-indicator">
+                    <span class="icon">📝</span>
+                    <span>Descripción permanente (se guarda automáticamente)</span>
+                </div>
+                <textarea id="imageNote" class="modal-text" placeholder="Escribe una descripción permanente para esta imagen..."></textarea>
+                <button id="saveNote" class="save-btn">Guardar Descripción</button>
+            </div>
+        </div>
+    </div>
 
-
+    <script src="app.js"></script>
 </body>
 </html>
