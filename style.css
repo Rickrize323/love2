@@ -1,33 +1,47 @@
+body {
+  background: #111;
+  margin: 0;
+  padding: 32px;
+}
+
+/* Carrusel */
 .carousel {
-    margin: 100px auto;
-    width: 90%;
-    border: 5px solid red;
-    display: flex;
-    overflow-x: auto;
-    gap: 1em;
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;     /* 🔑 snap bonito */
+  -webkit-overflow-scrolling: touch; /* 🔑 inercia iOS */
+  padding: 16px;
 }
+
+/* Ocultar scrollbar */
 .carousel::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
-.group {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1em;
-    animation: spin 5s infinite linear;
-    padding-right: 1em;
-}
+
+/* Cards */
 .card {
-    flex: 0 0 5em;
-    height: 5em;
-    padding: 1em;
-    background: cornflowerblue;
-    font-size: 3rem;
-    border-radius: .2em;
-    text-align: center;
-    align-content: center;  
+  scroll-snap-align: center;         /* 🔑 se centra al soltar */
+  flex: 0 0 auto;
+  width: 110px;
+  height: 110px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #222;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-@keyframes spin {
-    from {translate: 0;}
-    to {translate : -100%;}
+
+/* Imagen */
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Feedback táctil */
+.card:active {
+  transform: scale(0.96);
 }
