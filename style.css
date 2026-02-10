@@ -12,8 +12,8 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Centra verticalmente */
-  align-items: center; /* Centra horizontalmente */
+  justify-content: center;
+  align-items: center;
   padding: 20px;
   overflow-x: hidden;
 }
@@ -25,12 +25,13 @@ body {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  padding: 40px 20px; /* Más padding para que respire */
+  padding: 40px 20px;
   width: 100%;
   max-width: 1200px;
   scrollbar-width: none;
   position: relative;
-  transform: translateY(-5%); /* Ajuste fino para centrado perfecto */
+  will-change: transform;
+  contain: content;
 }
 
 /* Ocultar scrollbar */
@@ -42,9 +43,9 @@ body {
 .card {
   scroll-snap-align: center;
   flex: 0 0 auto;
-  width: 180px; /* Más grande */
-  height: 180px; /* Más grande */
-  border-radius: 20px; /* Bordes más redondeados */
+  width: 180px;
+  height: 180px;
+  border-radius: 20px;
   overflow: hidden;
   background: #222;
   position: relative;
@@ -52,14 +53,17 @@ body {
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
   transform-origin: center center;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Efecto de zoom y elevación al hover */
 .card:hover {
-  transform: scale(1.15) translateY(-10px); /* Zoom y levanta */
+  transform: scale(1.15) translateY(-10px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6),
-              0 0 0 2px rgba(74, 158, 255, 0.3); /* Borde luminoso */
-  z-index: 10; /* Asegura que esté por encima */
+              0 0 0 2px rgba(74, 158, 255, 0.3);
+  z-index: 10;
 }
 
 /* Imagen dentro de la card - Zoom suave */
@@ -69,11 +73,13 @@ body {
   object-fit: cover;
   display: block;
   transition: transform 0.4s ease;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 /* Zoom más pronunciado en la imagen al hover */
 .card:hover img {
-  transform: scale(1.08); /* Zoom interno adicional */
+  transform: scale(1.08);
 }
 
 /* Badge para imágenes con nota - Mejor posicionado */
@@ -138,7 +144,7 @@ body {
 /* IMAGEN EN EL MODAL - Más grande y centrada */
 .modal-image {
   width: 100%;
-  height: 320px; /* Más alta */
+  height: 320px;
   object-fit: cover;
   display: block;
 }
@@ -196,7 +202,7 @@ body {
 
 /* BOTONES */
 .save-btn {
-  background: linear-gradient(145deg, #34373a, #41140d);
+  background: linear-gradient(145deg, #4a9eff, #3a7edf);
   color: white;
   border: none;
   padding: 16px 32px;
@@ -210,7 +216,7 @@ body {
 }
 
 .save-btn:hover {
-  background: linear-gradient(145deg, #41474c, #4a8eff);
+  background: linear-gradient(145deg, #5aaeff, #4a8eff);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(74, 158, 255, 0.4);
 }
@@ -291,18 +297,32 @@ body.modal-open .carousel {
   opacity: 1;
 }
 
-/* RESPONSIVE PARA MÓVILES - Manteniendo el zoom */
+/* Efecto de pulso sutil en las cards con nota */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); }
+  50% { box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3); }
+}
+
+.card:has(.note-badge) {
+  animation: pulseGlow 3s infinite ease-in-out;
+}
+
+/* Scroll horizontal más suave */
+.carousel {
+  scroll-behavior: smooth;
+}
+
+/* RESPONSIVE PARA MÓVILES */
 @media (max-width: 768px) {
   body {
     padding: 15px;
-    justify-content: flex-start; /* En móvil, empieza desde arriba */
+    justify-content: flex-start;
     padding-top: 40px;
   }
   
   .carousel {
     gap: 14px;
     padding: 30px 15px;
-    transform: translateY(0);
   }
   
   .card {
@@ -373,19 +393,4 @@ body.modal-open .carousel {
     font-size: 13px;
     padding: 8px 12px;
   }
-}
-
-/* Efecto de pulso sutil en las cards con nota */
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); }
-  50% { box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3); }
-}
-
-.card:has(.note-badge) {
-  animation: pulseGlow 3s infinite ease-in-out;
-}
-
-/* Scroll horizontal más suave */
-.carousel {
-  scroll-behavior: smooth;
 }
