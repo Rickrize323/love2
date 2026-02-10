@@ -1,37 +1,69 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   background: #111;
   margin: 0;
   padding: 32px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
 }
 
-/* Carrusel */
+/* ======================
+   Carrusel
+   ====================== */
 .carousel {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   overflow-x: auto;
-  scroll-snap-type: x mandatory;     /* 🔑 snap bonito */
-  -webkit-overflow-scrolling: touch; /* 🔑 inercia iOS */
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
   padding: 16px;
+  justify-content: flex-start;
+  cursor: grab;
+}
+
+.carousel:active {
+  cursor: grabbing;
 }
 
 /* Ocultar scrollbar */
 .carousel::-webkit-scrollbar {
   display: none;
 }
+.carousel {
+  scrollbar-width: none;
+}
 
-/* Cards */
+/* ======================
+   Cards
+   ====================== */
 .card {
-  scroll-snap-align: center;         /* 🔑 se centra al soltar */
   flex: 0 0 auto;
-  width: 110px;
-  height: 110px;
+  width: 120px;
+  height: 120px;
   border-radius: 16px;
-  overflow: hidden;
   background: #222;
+  overflow: hidden;
 
   display: flex;
   align-items: center;
   justify-content: center;
+
+  scroll-snap-align: center;
+  cursor: pointer;
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+.card:active {
+  transform: scale(0.96);
 }
 
 /* Imagen */
@@ -39,9 +71,30 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+  user-select: none;
 }
 
-/* Feedback táctil */
-.card:active {
-  transform: scale(0.96);
+/* ======================
+   Modal
+   ====================== */
+.hidden {
+  display: none;
 }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.8);
+  display: grid;
+  place-items: center;
+  z-index: 999;
+}
+
+.modal-content img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+}
+
