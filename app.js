@@ -150,7 +150,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (notes[imageKey]) {
       const indicator = document.createElement('div');
       indicator.className = 'note-badge';
-      indicator.innerHTML = '📝';
       indicator.style.cssText = `
         position: absolute;
         top: 8px;
@@ -192,4 +191,3 @@ document.addEventListener('DOMContentLoaded', function() {
   // Inicializar
   setupInfiniteScroll();
 });
-
