@@ -1,4 +1,42 @@
 document.addEventListener('DOMContentLoaded', function() {
+  // ... (todo el código anterior se mantiene igual hasta la parte de eventos)
+  
+  // Configurar eventos con mejor feedback táctil
+  document.querySelectorAll('.card').forEach((card, index) => {
+    // Click para abrir modal
+    card.addEventListener('click', function(e) {
+      const img = this.querySelector('img');
+      openModal(img, index);
+    });
+    
+    // Efecto de presión táctil
+    card.addEventListener('touchstart', function() {
+      this.style.transform = 'scale(0.95)';
+    });
+    
+    card.addEventListener('touchend', function() {
+      this.style.transform = '';
+    });
+    
+    // Efecto hover táctil (para dispositivos táctiles)
+    card.addEventListener('touchmove', function(e) {
+      const touch = e.touches[0];
+      const rect = this.getBoundingClientRect();
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+      
+      // Si el dedo está dentro de la card
+      if (x > 0 && x < rect.width && y > 0 && y < rect.height) {
+        this.style.transform = 'scale(1.05)';
+      } else {
+        this.style.transform = '';
+      }
+    });
+  });
+  
+  // ... (el resto del código se mantiene igual)
+});
+document.addEventListener('DOMContentLoaded', function() {
   const carousel = document.querySelector('.carousel');
   const modal = document.getElementById('imageModal');
   const modalImage = document.getElementById('modalImage');
