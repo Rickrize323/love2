@@ -1,10 +1,199 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // ... (todo el código anterior se mantiene igual hasta la parte de eventos)
+  // Elementos del DOM
+  const carousel = document.querySelector('.carousel');
+  const modal = document.getElementById('imageModal');
+  const modalImage = document.getElementById('modalImage');
+  const modalText = document.getElementById('imageNote');
+  const saveBtn = document.getElementById('saveNote');
+  const closeBtn = document.querySelector('.close-btn');
+  const body = document.body;
   
-  // Configurar eventos con mejor feedback táctil
+  // Variables
+  let isModalOpen = false;
+  let currentImageIndex = 0;
+  let notes = JSON.parse(localStorage.getItem('imageNotes')) || {};
+  let saveTimeout = null;
+  let isProgrammaticScroll = false;
+  
+  // CONFIGURACIÓN DEL CARRUSEL INFINITO (Solución robusta)
+  function setupInfiniteCarousel() {
+    // Posicionar inicialmente en el medio del primer conjunto
+    setTimeout(() => {
+      if (carousel.scrollWidth > carousel.clientWidth) {
+        const scrollPosition = carousel.scrollWidth / 4;
+        carousel.scrollLeft = scrollPosition;
+      }
+    }, 100);
+    
+    // Manejar scroll infinito
+    carousel.addEventListener('scroll', handleInfiniteScroll);
+    
+    // Hacer scroll suave
+    carousel.style.scrollBehavior = 'smooth';
+  }
+  
+  function handleInfiniteScroll() {
+    if (isProgrammaticScroll) return;
+    
+    const scrollLeft = carousel.scrollLeft;
+    const scrollWidth = carousel.scrollWidth;
+    const clientWidth = carousel.clientWidth;
+    const scrollThreshold = 100;
+    
+    // Si estamos cerca del final del scroll
+    if (scrollLeft > scrollWidth - clientWidth - scrollThreshold) {
+      isProgrammaticScroll = true;
+      
+      // Saltar al principio del segundo conjunto
+      carousel.style.scrollBehavior = 'auto';
+      carousel.scrollLeft = (scrollWidth / 2) - clientWidth + scrollThreshold;
+      
+      setTimeout(() => {
+        carousel.style.scrollBehavior = 'smooth';
+        isProgrammaticScroll = false;
+      }, 50);
+    }
+    // Si estamos cerca del inicio del scroll
+    else if (scrollLeft < scrollThreshold) {
+      isProgrammaticScroll = true;
+      
+      // Saltar al final del primer conjunto
+      carousel.style.scrollBehavior = 'auto';
+      carousel.scrollLeft = (scrollWidth / 2) - scrollThreshold;
+      
+      setTimeout(() => {
+        carousel.style.scrollBehavior = 'smooth';
+        isProgrammaticScroll = false;
+      }, 50);
+    }
+  }
+  
+  // FUNCIONES DEL MODAL
+  function openModal(imgElement, index) {
+    currentImageIndex = index;
+    modalImage.src = imgElement.src;
+    modalImage.alt = imgElement.alt;
+    
+    // Cargar nota existente
+    const noteKey = `image_${index % 14}`; // Solo 14 imágenes únicas
+    const savedNote = notes[noteKey] || '';
+    modalText.value = savedNote;
+    
+    // Aplicar estilo si tiene nota
+    if (savedNote) {
+      modalText.classList.add('has-note');
+    } else {
+      modalText.classList.remove('has-note');
+    }
+    
+    // Mostrar modal
+    modal.classList.add('active');
+    body.classList.add('modal-open');
+    isModalOpen = true;
+    
+    // Enfocar el textarea si hay contenido
+    if (savedNote) {
+      setTimeout(() => {
+        modalText.focus();
+        modalText.setSelectionRange(savedNote.length, savedNote.length);
+      }, 100);
+    }
+  }
+  
+  function closeModal() {
+    // Guardar antes de cerrar
+    saveNote();
+    
+    modal.classList.remove('active');
+    body.classList.remove('modal-open');
+    isModalOpen = false;
+    
+    // Limpiar timeout
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+      saveTimeout = null;
+    }
+  }
+  
+  function saveNote() {
+    const noteKey = `image_${currentImageIndex % 14}`;
+    const noteText = modalText.value.trim();
+    
+    if (noteText) {
+      notes[noteKey] = noteText;
+      localStorage.setItem('imageNotes', JSON.stringify(notes));
+      
+      // Actualizar badge visual en todas las tarjetas correspondientes
+      updateNoteBadges(noteKey, true);
+      
+      // Feedback visual
+      showSaveFeedback('✓ Guardada');
+      modalText.classList.add('has-note');
+    } else {
+      // Si está vacío, eliminar
+      delete notes[noteKey];
+      localStorage.setItem('imageNotes', JSON.stringify(notes));
+      
+      // Actualizar badge visual
+      updateNoteBadges(noteKey, false);
+      
+      modalText.classList.remove('has-note');
+    }
+  }
+  
+  function showSaveFeedback(message) {
+    const originalText = saveBtn.textContent;
+    
+    saveBtn.textContent = message;
+    saveBtn.style.background = '#10b981';
+    saveBtn.disabled = true;
+    
+    setTimeout(() => {
+      saveBtn.textContent = originalText;
+      saveBtn.style.background = '';
+      saveBtn.disabled = false;
+    }, 1500);
+  }
+  
+  function updateNoteBadges(imageKey, hasNote) {
+    // imageKey tiene formato "image_0" a "image_13"
+    const index = parseInt(imageKey.split('_')[1]);
+    
+    // Actualizar en ambos sets de tarjetas
+    document.querySelectorAll('.card').forEach((card, cardIndex) => {
+      // Las primeras 14 tarjetas son el primer set, las siguientes 14 son el segundo set
+      if (cardIndex % 14 === index) {
+        let badge = card.querySelector('.note-badge');
+        
+        if (hasNote && !badge) {
+          // Crear badge
+          badge = document.createElement('div');
+          badge.className = 'note-badge';
+          badge.textContent = '📝';
+          card.appendChild(badge);
+        } else if (!hasNote && badge) {
+          // Eliminar badge
+          badge.remove();
+        }
+      }
+    });
+  }
+  
+  // Auto-guardar con debounce
+  modalText.addEventListener('input', function() {
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+    }
+    
+    saveTimeout = setTimeout(() => {
+      saveNote();
+    }, 2000);
+  });
+  
+  // CONFIGURAR EVENTOS EN LAS TARJETAS
   document.querySelectorAll('.card').forEach((card, index) => {
     // Click para abrir modal
-    card.addEventListener('click', function(e) {
+    card.addEventListener('click', function() {
       const img = this.querySelector('img');
       openModal(img, index);
     });
@@ -18,197 +207,17 @@ document.addEventListener('DOMContentLoaded', function() {
       this.style.transform = '';
     });
     
-    // Efecto hover táctil (para dispositivos táctiles)
-    card.addEventListener('touchmove', function(e) {
-      const touch = e.touches[0];
-      const rect = this.getBoundingClientRect();
-      const x = touch.clientX - rect.left;
-      const y = touch.clientY - rect.top;
-      
-      // Si el dedo está dentro de la card
-      if (x > 0 && x < rect.width && y > 0 && y < rect.height) {
-        this.style.transform = 'scale(1.05)';
-      } else {
-        this.style.transform = '';
-      }
-    });
-  });
-  
-  // ... (el resto del código se mantiene igual)
-});
-document.addEventListener('DOMContentLoaded', function() {
-  const carousel = document.querySelector('.carousel');
-  const modal = document.getElementById('imageModal');
-  const modalImage = document.getElementById('modalImage');
-  const modalText = document.getElementById('imageNote');
-  const saveBtn = document.getElementById('saveNote');
-  const closeBtn = document.querySelector('.close-btn');
-  const cards = document.querySelectorAll('.card');
-  const body = document.body;
-  
-  let isModalOpen = false;
-  let currentImageIndex = 0;
-  let notes = JSON.parse(localStorage.getItem('imageNotes')) || {};
-  
-  // Configurar carrusel infinito y centrado
-  function setupInfiniteScroll() {
-    setTimeout(() => {
-      carousel.scrollLeft = (carousel.scrollWidth - carousel.clientWidth) / 4;
-    }, 100);
-    
-    carousel.addEventListener('scroll', function() {
-      const scrollLeft = carousel.scrollLeft;
-      const scrollWidth = carousel.scrollWidth;
-      const clientWidth = carousel.clientWidth;
-      const scrollThreshold = 100;
-      
-      if (scrollLeft > scrollWidth - clientWidth - scrollThreshold) {
-        carousel.style.scrollBehavior = 'auto';
-        carousel.scrollLeft = scrollThreshold;
-        setTimeout(() => {
-          carousel.style.scrollBehavior = 'smooth';
-        }, 50);
-      } else if (scrollLeft < scrollThreshold) {
-        carousel.style.scrollBehavior = 'auto';
-        carousel.scrollLeft = scrollWidth - clientWidth - scrollThreshold;
-        setTimeout(() => {
-          carousel.style.scrollBehavior = 'smooth';
-        }, 50);
-      }
-    });
-    
-    carousel.style.scrollBehavior = 'smooth';
-  }
-  
-  // Abrir modal
-  function openModal(imageSrc, alt, index) {
-    currentImageIndex = index;
-    
-    const img = new Image();
-    img.onload = () => {
-      modalImage.src = imageSrc;
-      modalImage.alt = alt;
-      
-      const imageKey = `image_${index}`;
-      const savedNote = notes[imageKey] || '';
-      modalText.value = savedNote;
-      
-      // Mostrar si ya tiene descripción guardada
-      if (savedNote) {
-        modalText.classList.add('has-note');
-      } else {
-        modalText.classList.remove('has-note');
-      }
-      
-      modal.classList.add('active');
-      body.classList.add('modal-open');
-      isModalOpen = true;
-      
-      if (savedNote) {
-        setTimeout(() => {
-          modalText.focus();
-          modalText.selectionStart = modalText.selectionEnd = savedNote.length;
-        }, 100);
-      }
-    };
-    img.src = imageSrc;
-  }
-  
-  // Cerrar modal
-  function closeModal() {
-    // Auto-guardar antes de cerrar
-    saveNote();
-    
-    modal.classList.remove('active');
-    body.classList.remove('modal-open');
-    isModalOpen = false;
-    
-    setTimeout(() => {
-      carousel.style.scrollBehavior = 'smooth';
-    }, 100);
-  }
-  
-  // Guardar descripción
-  function saveNote() {
-    const imageKey = `image_${currentImageIndex}`;
-    const noteText = modalText.value.trim();
-    
-    if (noteText) {
-      notes[imageKey] = noteText;
-      localStorage.setItem('imageNotes', JSON.stringify(notes));
-      
-      // Feedback visual
-      modalText.classList.add('has-note');
-      showSaveFeedback('✓ Descripción guardada');
-    } else {
-      // Si está vacío, eliminar del almacenamiento
-      delete notes[imageKey];
-      localStorage.setItem('imageNotes', JSON.stringify(notes));
-      modalText.classList.remove('has-note');
-    }
-  }
-  
-  // Mostrar feedback de guardado
-  function showSaveFeedback(message) {
-    const originalText = saveBtn.textContent;
-    const originalBg = saveBtn.style.background;
-    
-    saveBtn.textContent = message;
-    saveBtn.style.background = '#10b981';
-    saveBtn.disabled = true;
-    
-    setTimeout(() => {
-      saveBtn.textContent = originalText;
-      saveBtn.style.background = originalBg;
-      saveBtn.disabled = false;
-    }, 1500);
-  }
-  
-  // Auto-guardar cada 2 segundos si hay cambios
-  let saveTimeout;
-  modalText.addEventListener('input', function() {
-    // Limpiar timeout anterior
-    clearTimeout(saveTimeout);
-    
-    // Establecer nuevo timeout
-    saveTimeout = setTimeout(() => {
-      saveNote();
-    }, 2000);
-  });
-  
-  // Configurar eventos
-  cards.forEach((card, index) => {
-    card.addEventListener('click', function(e) {
-      const img = this.querySelector('img');
-      openModal(img.src, img.alt, index);
-    });
-    
-    // Mostrar indicador visual si tiene descripción guardada
-    const imageKey = `image_${index}`;
-    if (notes[imageKey]) {
-      const indicator = document.createElement('div');
-      indicator.className = 'note-badge';
-      indicator.style.cssText = `
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        background: rgba(76, 175, 80, 0.9);
-        color: white;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        z-index: 1;
-      `;
-      card.style.position = 'relative';
-      card.appendChild(indicator);
+    // Agregar badge si ya tiene nota
+    const noteKey = `image_${index % 14}`;
+    if (notes[noteKey]) {
+      const badge = document.createElement('div');
+      badge.className = 'note-badge';
+      badge.textContent = '📝';
+      card.appendChild(badge);
     }
   });
   
-  // Eventos del modal
+  // EVENTOS DEL MODAL
   closeBtn.addEventListener('click', closeModal);
   saveBtn.addEventListener('click', saveNote);
   
@@ -219,13 +228,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // Cerrar haciendo clic fuera
+  // Cerrar al hacer clic fuera
   modal.addEventListener('click', function(e) {
     if (e.target === modal) {
       closeModal();
     }
   });
   
-  // Inicializar
-  setupInfiniteScroll();
+  // INICIALIZAR
+  setupInfiniteCarousel();
 });
