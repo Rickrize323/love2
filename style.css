@@ -1,32 +1,33 @@
-img {
-    width: 250px;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 16px;
+.carousel {
+    margin: 100px auto;
+    width: 90%;
+    border: 5px solid red;
+    display: flex;
+    overflow-x: auto;
+    gap: 1em;
 }
-body{
-    background: #111;
-    display: grid;
-    padding-block: 128px;
-    place-content: center;
-    gap: 8px;
+.carousel::-webkit-scrollbar {
+    display: none;
 }
-
-
-@keyframes show {
-  from {
-    opacity: 0; scale: 10%;
-  }
-  to {
-    opacity: 1; scale: 100%;
-  }
+.group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+    animation: spin 5s infinite linear;
+    padding-right: 1em;
 }
-img {
-  view-timeline-name: --reveal;
-
-  animation-name: show;
-  animation-fill-mode: both;
-
-  animation-timeline: --reveal;
-  animation-range:entry 25% cover 50%;
+.card {
+    flex: 0 0 5em;
+    height: 5em;
+    padding: 1em;
+    background: cornflowerblue;
+    font-size: 3rem;
+    border-radius: .2em;
+    text-align: center;
+    align-content: center;  
+}
+@keyframes spin {
+    from {translate: 0;}
+    to {translate : -100%;}
 }
